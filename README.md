@@ -1,36 +1,160 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Supabase S3 Bucket Gallery
 
-## Getting Started
+A minimal, clean, and fully functional **image gallery app** built with **Next.js**, **Supabase Storage**, and **Supabase Auth**.  
+Users can authenticate, upload images to Supabase buckets, and browse a responsive gallery UI.
 
-First, run the development server:
+This project is designed to be simple, fast, and production-ready — perfect as a learning example, portfolio piece, or starter for a larger storage/file-management app.
+
+---
+
+## 🚀 Features
+
+### Authentication
+- Email/password login  
+- Supabase Auth Browser Client  
+  (configured in `supabaseBrowserClient.js`)
+
+### Storage Operations
+- Create buckets  
+- Upload images  
+- Fetch & load bucket contents  
+- Render images in a gallery grid  
+
+### UI
+- Clean, minimal layout  
+- Pages: **Create**, **Upload**, **Load**, **Gallery**
+
+---
+
+## 🧱 Tech Stack
+
+- **Next.js 14+**
+- **React (App Router)**
+- **Supabase JS Client**
+- **Supabase Storage API**
+- **TailwindCSS** (optional depending on your styling choices)
+
+---
+
+## 📂 Project Structure
+
+/
+app/
+create/
+upload/
+load/
+gallery/
+components/
+lib/
+supabaseBrowserClient.js
+public/
+...
+
+yaml
+Copy code
+
+### Correctly Ignored (Not Included in Repo)
+
+- `.env.local`
+- `.next/`
+- `node_modules/`
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env.local` file:
+
+NEXT_PUBLIC_SUPABASE_URL=your-url-here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+powershell
+Copy code
+
+If using the Vite version:
+
+VITE_SUPABASE_URL=your-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+csharp
+Copy code
+
+These are consumed by:
+
+lib/supabaseBrowserClient.js
+
+yaml
+Copy code
+
+---
+
+## 🏁 Getting Started
+
+Install dependencies:
 
 ```bash
+npm install
+Run the development server:
+
+bash
+Copy code
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+arduino
+Copy code
+http://localhost:3000
+📸 How the App Works
+1️⃣ Create Bucket
+Navigate to /create, enter a bucket name → Supabase creates the storage bucket.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2️⃣ Upload Image
+Go to /upload, choose a bucket + file → upload via supabase.storage.from(bucket).upload().
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3️⃣ Load Buckets
+The /load page fetches all buckets and displays them.
 
-## Learn More
+4️⃣ View Gallery
+The /gallery page loads and renders all uploaded images from the selected bucket.
 
-To learn more about Next.js, take a look at the following resources:
+This workflow matches the original “vanilla” app (Create → Upload → Load → Gallery).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🧪 Supabase Client Overview
+js
+Copy code
+import { createClient } from "@supabase/supabase-js";
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-## Deploy on Vercel
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+export { supabase };
+export default supabase;
+📦 Deployment
+Deploy easily on:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel (recommended)
+
+Netlify
+
+Supabase Hosting
+
+Be sure to add environment variables in your hosting provider settings.
+
+🤝 Contributing
+PRs are welcome.
+Future enhancements could include:
+
+Drag-and-drop uploads
+
+Folder support
+
+Metadata display
+
+Infinite scroll
+
+RLS rules for multi-user access
+
+📄 License
+MIT — free for personal, academic, or commercial use.
