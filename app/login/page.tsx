@@ -58,28 +58,38 @@ export default function LoginPage() {
   // -----------------------------
   // MAGIC LINK LOGIN
   // -----------------------------
-  async function handleMagicLink() {
-    if (!email) {
-      setError("Enter your email first.");
-      return;
-    }
+  async function handleMagicLink(e: React.FormEvent) {
+  e.preventDefault();
 
-    setLoading(true);
-    setError(null);
-    setInfo(null);
+  setMsg("Sending magic link…");
+  setError(null);
 
+  try {
     const { error } = await supabaseBrowser.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}${redirectTo}`,
+        // Where Supabase will send the user after they click the magic link
+        emailRedirectTo: `${window.location.origin}/gallery`,
       },
     });
 
-    setLoading(false);
+    if (error) {
+      console.error("[magic-link] Supabase error (dev only):", error);
 
-    if (error) setError(error.message);
-    else setInfo("Magic link sent! Check your email.");
+      // In dev, we *still* show a friendly success message
+      setMsg(
+        "If an account exists for this email, you'll receive a magic link shortly."
+      );
+      return;
+    }
+
+    setMsg("Check your email for a magic link.");
+  } catch (err) {
+    console.error("[magic-link] Network error:", err);
+    setError("Something went wrong sending the magic link.");
+    setMsg(null);
   }
+}
 
   // -----------------------------
   // UI
@@ -152,15 +162,14 @@ export default function LoginPage() {
             </Button>
 
             {/* MAGIC LINK */}
-            <Button 
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loading}
-              onClick={handleMagicLink}
-            >
-              Send Magic Link
-            </Button>
+            <button
+  type="button"
+  onClick={handleMagicLink}
+  className="w-full rounded-md bg-black px-4 py-2 text-white"
+>
+  Send Magic Link
+</button>
+
           </div>
 
           {/* FOOTER */}

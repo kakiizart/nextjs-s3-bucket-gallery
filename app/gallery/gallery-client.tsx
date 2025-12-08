@@ -46,11 +46,14 @@ export function GalleryClient() {
     setError(null);
     try {
       const res = await fetch("/api/buckets/list");
+      const json = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error || `List buckets failed (${res.status})`);
+        throw new Error(json?.error || `List buckets failed (${res.status})`);
       }
-      const data: Bucket[] = await res.json();
+
+      const data = (json || []) as Bucket[];
+
       setBuckets(data);
       if (!selectedBucket && data.length) {
         setSelectedBucket(data[0].name);
@@ -75,10 +78,15 @@ export function GalleryClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
+
+      const json = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error || `Create bucket failed (${res.status})`);
+        throw new Error(
+          json?.error || `Create bucket failed (${res.status})`
+        );
       }
+
       log(`Bucket "${name}" created.`);
       setNewBucketName("");
       await fetchBuckets();
@@ -107,15 +115,18 @@ export function GalleryClient() {
       const res = await fetch(
         `/api/gallery/list?bucket=${encodeURIComponent(selectedBucket)}`
       );
+      const json = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error || `Load gallery failed (${res.status})`);
+        throw new Error(
+          json?.error || `Load gallery failed (${res.status})`
+        );
       }
-      const data: GalleryItem[] = await res.json();
+
+      const data = (json || []) as GalleryItem[];
+
       setItems(data);
-      log(
-        `Loaded ${data.length} item(s) from bucket "${selectedBucket}".`
-      );
+      log(`Loaded ${data.length} item(s) from bucket "${selectedBucket}".`);
     } catch (err: any) {
       setError(err.message || "Failed to load gallery");
       log(`Error loading gallery: ${err.message || err}`);
@@ -145,13 +156,14 @@ export function GalleryClient() {
         method: "POST",
         body: formData,
       });
+
+      const json = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error || `Upload failed (${res.status})`);
+        throw new Error(json?.error || `Upload failed (${res.status})`);
       }
-      log(
-        `Uploaded ${files.length} file(s) to "${selectedBucket}".`
-      );
+
+      log(`Uploaded ${files.length} file(s) to "${selectedBucket}".`);
       await loadGallery();
     } catch (err: any) {
       setError(err.message || "Upload failed");
@@ -172,10 +184,13 @@ export function GalleryClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bucket: selectedBucket, path }),
       });
+
+      const json = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error || `Delete failed (${res.status})`);
+        throw new Error(json?.error || `Delete failed (${res.status})`);
       }
+
       setItems((prev) => prev.filter((i) => i.path !== path));
       log(`Deleted "${path}" from "${selectedBucket}".`);
     } catch (err: any) {
@@ -204,7 +219,6 @@ export function GalleryClient() {
 
   return (
     <div className="space-y-6">
-
       {/* Step 1 — Create bucket */}
       <section className="rounded-2xl border border-zinc-200 bg-zinc-900/5 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
         <h2 className="text-sm font-semibold text-amber-300">
@@ -253,9 +267,7 @@ export function GalleryClient() {
             value={selectedBucket}
             onChange={(e) => setSelectedBucket(e.target.value)}
           >
-            {buckets.length === 0 && (
-              <option value="">No buckets</option>
-            )}
+            {buckets.length === 0 && <option value="">No buckets</option>}
             {buckets.map((b) => (
               <option key={b.id} value={b.name}>
                 {b.name}
@@ -280,12 +292,8 @@ export function GalleryClient() {
           onDragOver={handleDragOver}
           className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-500/50 bg-zinc-900/40 px-4 py-10 text-center text-xs text-zinc-400"
         >
-          <p className="font-semibold text-zinc-200">
-            Drag & Drop Images
-          </p>
-          <p className="mt-1 text-[11px]">
-            PNG, JPG, JPEG, GIF, WEBP
-          </p>
+          <p className="font-semibold text-zinc-200">Drag & Drop Images</p>
+          <p className="mt-1 text-[11px]">PNG, JPG, JPEG, GIF, WEBP</p>
           <p className="mt-1 text-[11px] text-zinc-500">or</p>
 
           <label className="mt-3 inline-flex cursor-pointer items-center justify-center rounded-full bg-zinc-800 px-4 py-1.5 text-[11px] font-medium text-zinc-100 hover:bg-zinc-700">
@@ -316,8 +324,6 @@ export function GalleryClient() {
             size="sm"
             disabled={uploading}
             onClick={() => {
-              // Upload button relies on file input; drag/drop already uploads.
-              // We keep this button mainly for parity with the vanilla UI.
               alert("Use the file picker or drag & drop to upload.");
             }}
           >
@@ -356,9 +362,7 @@ export function GalleryClient() {
 
       {/* Gallery */}
       <section className="rounded-2xl border border-zinc-200 bg-zinc-900/5 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
-        <h2 className="text-sm font-semibold text-amber-300">
-          Gallery
-        </h2>
+        <h2 className="text-sm font-semibold text-amber-300">Gallery</h2>
 
         {items.length === 0 ? (
           <p className="mt-3 text-sm text-zinc-500">
