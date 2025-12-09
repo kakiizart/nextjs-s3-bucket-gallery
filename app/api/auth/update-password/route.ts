@@ -1,9 +1,8 @@
-// app/api/auth/update-password/route.ts
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient(); // <-- await
   const { password } = await req.json();
 
   const { data, error } = await supabase.auth.updateUser({ password });

@@ -1,9 +1,8 @@
-// app/api/auth/magic-link/route.ts
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient(); // <-- await
   const { email } = await req.json();
 
   const { data, error } = await supabase.auth.signInWithOtp({
